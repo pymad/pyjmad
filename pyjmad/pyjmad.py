@@ -53,6 +53,8 @@ class Model(object):
     def __init__(self, jmadModel):
         self._jmadModel = jmadModel
         self.definition = ModelDefinition(jmadModel.getModelDefinition())
+        if not jmadModel.isInitialized():
+            jmadModel.init()
 
     def twiss(self, variables, element_filter=None):
         if isinstance(variables, str):
@@ -98,6 +100,10 @@ class Model(object):
         if jmadSequence is None:
             raise ValueError('Invalid sequence: ' + sequence)
         self._jmadModel.setActiveRangeDefinition(jmadSequence.getDefaultRangeDefinition())
+
+    @property
+    def strengths(self):
+        return {s.getName(): s.getValue() for s in self._jmadModel.getStrengthsAndVars().getStrengths()}
 
     def __str__(self):
         return self.name + " - " + str(self.optic) + " - " + str(self.sequence)
@@ -145,18 +151,18 @@ class ModelDefinition(object):
 class _JMadVariableRepository(object):
     def __init__(self, variable_class):
         self._jmadClass = variable_class
-        self._jmadVars = {v.getName(): v for v in variable_class.values()}
+        self._jmadVars = {v.getName().upper(): v for v in variable_class.values()}
 
     def _jmad_variable(self, var):
         if isinstance(var, str):
-            return self._jmadVars[var.lower()]
+            return self._jmadVars[var.upper()]
         else:
             return var
 
     def __getattr__(self, name):
         if name == '_jmadVars':
             return self._jmadVars
-        if name.lower() in self._jmadVars:
+        if name.upper() in self._jmadVars:
             return name.upper()
 
     def __dir__(self):
