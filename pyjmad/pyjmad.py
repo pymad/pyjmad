@@ -29,17 +29,15 @@ class JMad(object):
 
     @property
     def model_definitions(self):
-        return [self.model_definition(m) for m in self._jmadModelDefinitionManager.getAllModelDefinitions()]
-
-    def model_definition(self, model):
-        if type(model) is str:
-            return ModelDefinition(self._jmadModelDefinitionManager.getModelDefinition(model))
-        elif type(model) is ModelDefinition:
-            return model
-        return ModelDefinition(model)
+        return {m.getName(): ModelDefinition(m) for m in
+                self._jmadModelDefinitionManager.getAllModelDefinitions()}
 
     def create_model(self, model):
-        return Model(self._jmadService.createModel(self.model_definition(model)._jmadModelDefinition))
+        if type(model) is str:
+            model = self.model_definitions[model]
+        elif type(model) is not ModelDefinition:
+            model = ModelDefinition(model)
+        return Model(self._jmadService.createModel(model._jmadModelDefinition))
 
     def open_jmad_gui(self):
         prefs = JMadGuiPreferencesImpl()
