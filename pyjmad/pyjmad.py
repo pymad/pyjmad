@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from collections import namedtuple
+from collections import namedtuple, MutableMapping
 
 import cmmnbuild_dep_manager
 import numpy as np
@@ -103,7 +103,7 @@ class Model(object):
 
     @property
     def strengths(self):
-        return {s.getName(): s.getValue() for s in self._jmadModel.getStrengthsAndVars().getStrengths()}
+        return Strengths(self._jmadModel.getStrengthsAndVars())
 
     def __str__(self):
         return self.name + " - " + str(self.optic) + " - " + str(self.sequence)
@@ -146,6 +146,46 @@ class ModelDefinition(object):
     def __repr__(self):
         return "ModelDefinition(" + self.name + ", optics=" + str(self.optics) + ", sequences=" + str(
             self.sequences) + ")"
+
+
+class Strengths(MutableMapping):
+    def __init__(self, jmadStrengthVarSet):
+        self._jmadStrengthVarSet = jmadStrengthVarSet
+
+    def _jmadStrength(self, k):
+        jmadStrength = self._jmadStrengthVarSet.getStrength(k)
+        if jmadStrength is None:
+            raise ValueError("Invalid Strength Name: " + k)
+        return jmadStrength
+
+    def __getitem__(self, k):
+        return self._jmadStrength(k).getValue()
+
+    def __setitem__(self, k, v):
+        return self._jmadStrength(k).setValue(float(v))
+
+    def __delitem__(self, k):
+        raise NotImplementedError("Deletion of Strengths is not supported")
+
+    def __iter__(self):
+        for s in self._jmadStrengthVarSet.getStrengths():
+            yield s.getName()
+
+    def __len__(self):
+        return self._jmadStrengthVarSet.getStrengths().size()
+
+    def _ipython_key_completions_(self):
+        return [s.getName() for s in self._jmadStrengthVarSet.getStrengths()]
+
+    def __repr__(self):
+        s = "Strengths(\n"
+        for k, v in self.items():
+            s += "   " + k + ": " + str(v) + "\n"
+        s += ")"
+        return s
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class _JMadVariableRepository(object):
