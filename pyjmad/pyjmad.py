@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from collections import namedtuple, MutableMapping
+from collections import namedtuple, MutableMapping, Mapping
 
 import cmmnbuild_dep_manager
 import numpy as np
@@ -105,6 +105,10 @@ class Model(object):
     def strengths(self):
         return Strengths(self._jmadModel.getStrengthsAndVars())
 
+    @property
+    def elements(self):
+        return Elements(self._jmadModel.getActiveRange())
+
     def __str__(self):
         return self.name + " - " + str(self.optic) + " - " + str(self.sequence)
 
@@ -155,7 +159,7 @@ class Strengths(MutableMapping):
     def _jmadStrength(self, k):
         jmadStrength = self._jmadStrengthVarSet.getStrength(k)
         if jmadStrength is None:
-            raise ValueError("Invalid Strength Name: " + k)
+            raise KeyError("Invalid Strength Name: " + k)
         return jmadStrength
 
     def __getitem__(self, k):
@@ -187,6 +191,45 @@ class Strengths(MutableMapping):
     def __str__(self):
         return self.__repr__()
 
+
+class Elements(Mapping):
+    def __init__(self, jmadRange):
+        self._jmadRange = jmadRange
+        self._elementDict = {e.getName(): e for e in jmadRange.getElements()}
+
+    def __getitem__(self, k):
+        return self._elementDict[k]
+
+    def __iter__(self):
+        return iter(self._elementDict)
+
+    def __len__(self):
+        return len(self._elementDict)
+
+    def _ipython_key_completions_(self):
+        return list(self._elementDict.keys())
+
+    def __repr__(self):
+        s = "Elements(\n"
+        for k, v in self.items():
+            s += "   " + k + " :: " + str(v) + "\n"
+        s += ")"
+        return s
+
+    def __str__(self):
+        return self.__repr__()
+
+class Element(object):
+    def __init__(self, jmadElement):
+        self._jmadElement = jmadElement
+
+    @property
+    def name(self):
+        return self._jmadElement.getName()
+
+    @property
+    def type(self):
+        return str(self._jmadElement.getMadxElementType())
 
 class _JMadVariableRepository(object):
     def __init__(self, variable_class):
