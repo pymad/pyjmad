@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from collections import MutableMapping
+from pyjmad import cern, java
+
 
 class Element(object):
     def __init__(self, jmadElement):
@@ -30,23 +33,21 @@ class Element(object):
 
     @property
     def attributes(self):
-        return {a:self._jmadElement.getAttribute(a).doubleValue() for a in self._jmadElement.getAttributeNames()}
+        return Attributes(self._jmadElement)
         
     def __str__(self):
-        return str(self.__class__.__name__)+'('+', '.join(['%s=%s'%(k,str(v)) for k,v in self.attributes.items()])+')'
+        return str(self._jmadElement)
 
     def __repr__(self):
         return self.__str__()
+
 
 def _specific_element(name, attributes):
     attr_dict = {}
     for attr in attributes:
         java_name = ''.join([s.capitalize() for s in attr.split('_')])
-        p = property(lambda self: self._jmadElement.__getattribute__('get'+java_name)())
-        try:
-            p = p.setter(lambda self, v: self._jmadElement.__getattribute__('set'+java_name)(float(v))) 
-        except:
-            pass
+        p = property(lambda self, java_name=java_name: self._jmadElement.__getattribute__('get'+java_name)()) \
+             .setter(lambda self, v, java_name=java_name: self._jmadElement.__getattribute__('set'+java_name)(float(v))) 
         attr_dict[attr] = p
     return type(name, (Element,), attr_dict)
 
@@ -61,7 +62,6 @@ Octupole = _specific_element('Octupole', ['k3', 'tilt'])
 
 
 def from_jmad(jmadElement):
-    from pyjmad import cern
     _jmadElementMap = {
         cern.accsoft.steering.jmad.domain.elem.impl.BeamBeam: BeamBeam,
         cern.accsoft.steering.jmad.domain.elem.impl.Bend: Bend,
@@ -74,3 +74,33 @@ def from_jmad(jmadElement):
         cern.accsoft.steering.jmad.domain.elem.impl.UnknownElement: Element
     }
     return _jmadElementMap[jmadElement.getClass()](jmadElement)
+
+
+class Attributes(MutableMapping):
+    def __init__(self, jmadElement):
+        self._jmadElement = jmadElement
+
+    def __getitem__(self, k):
+        return self._jmadElement.getAttribute(k).doubleValue()
+
+    def __setitem__(self, k, v):
+        return self._jmadElement.setAttribute(k, java.lang.Double(float(v)))
+
+    def __delitem__(self, k):
+        raise NotImplementedError("Deletion of Attributes is not supported")
+
+    def __iter__(self):
+        for s in self._jmadElement.getAttributeNames():
+            yield s
+
+    def __len__(self):
+        return self._jmadElement.getAttributeNames().size()
+
+    def _ipython_key_completions_(self):
+        return [s for s in self._jmadElement.getAttributeNames()]
+
+    def __repr__(self):
+        return "{"+', '.join([k+'='+str(v) for k,v in self.items()])+"}"
+
+    def __str__(self):
+        return self.__repr__()
