@@ -43,6 +43,28 @@ plt.plot(res.data.S, res.data.BETY)
 plt.show()
 ```
 
+Show and/or edit some strengths:
+```python
+print(lhcModel.strengths)
+lhcModel.strengths['on_x1'] = 140
+lhcModel.strengths['on_x5'] = 140
+print(lhcModel.strengths['on_x5'])
+```
+(jupyter/ipython autocompletion hints supported)
+
+Deal with Elements:
+```python
+print(lhcModel.elements)
+corrector = lhcModel.elements['MCBCH.10L1.B1']
+corrector.h_kick = 4.2e-6  # rad
+# or equivalent
+corrector.attributes['hkick'] = 4.2e-6
+print(corrector.attributes)
+```
+(jupyter/ipython autocompletion hints supported, both on ``elements`` and ``attributes``)
+
+
+
 Open a JMad GUI (sharing the state with the python script) for interactive exploration:
 ```python
 jmad.open_jmad_gui()
