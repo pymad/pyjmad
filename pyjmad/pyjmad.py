@@ -198,7 +198,8 @@ class Elements(Mapping):
         self._elementDict = {e.getName(): e for e in jmadRange.getElements()}
 
     def __getitem__(self, k):
-        return self._elementDict[k]
+        from .element import from_jmad
+        return from_jmad(self._elementDict[k])
 
     def __iter__(self):
         return iter(self._elementDict)
@@ -219,17 +220,6 @@ class Elements(Mapping):
     def __str__(self):
         return self.__repr__()
 
-class Element(object):
-    def __init__(self, jmadElement):
-        self._jmadElement = jmadElement
-
-    @property
-    def name(self):
-        return self._jmadElement.getName()
-
-    @property
-    def type(self):
-        return str(self._jmadElement.getMadxElementType())
 
 class _JMadVariableRepository(object):
     def __init__(self, variable_class):

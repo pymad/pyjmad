@@ -16,6 +16,7 @@ __cmmnbuild_deps__ = [
 # continue
 try:
     from .pyjmad import *
+    from . import element
 except:
     import logging
     logging.basicConfig()
