@@ -92,7 +92,7 @@ class Model(object):
         if jmadRange is None:
             return None
         else:
-            return jmadRange.getRangeDefinition().getSequenceDefinition().getName()
+            return SequenceDefinition(jmadRange.getRangeDefinition().getSequenceDefinition())
 
     @sequence.setter
     def sequence(self, sequence):
@@ -100,6 +100,15 @@ class Model(object):
         if jmadSequence is None:
             raise ValueError('Invalid sequence: ' + sequence)
         self._jmadModel.setActiveRangeDefinition(jmadSequence.getDefaultRangeDefinition())
+    
+    @property
+    def range(self):
+        return self._jmadModel.getActiveRange().getName()
+
+    @range.setter
+    def range(self, range):
+        return self._jmadModel.setActiveRangeDefinition(self.sequence._jmad_rangeDefinition(range))
+
 
     @property
     def strengths(self):
@@ -130,7 +139,7 @@ class ModelDefinition(object):
 
     @property
     def sequences(self):
-        return [o.getName() for o in self._jmadModelDefinition.getSequenceDefinitions()]
+        return [SequenceDefinition(o) for o in self._jmadModelDefinition.getSequenceDefinitions()]
 
     def _jmad_opticDefinition(self, optic):
         if isinstance(optic, str):
@@ -141,6 +150,8 @@ class ModelDefinition(object):
     def _jmad_sequenceDefinition(self, sequence):
         if isinstance(sequence, str):
             return self._jmadModelDefinition.getSequenceDefinition(sequence)
+        elif isinstance(sequence, SequenceDefinition):
+            return sequence._jmadSequenceDefinition
         else:
             return sequence
 
@@ -148,8 +159,32 @@ class ModelDefinition(object):
         return self.name
 
     def __repr__(self):
-        return "ModelDefinition(" + self.name + ", optics=" + str(self.optics) + ", sequences=" + str(
-            self.sequences) + ")"
+        return self.name + " (optics=" + str(self.optics) + ", sequences=" + str(self.sequences) + ")"
+
+class SequenceDefinition(object):
+    def __init__(self, jmadSequenceDefinition):
+        self._jmadSequenceDefinition = jmadSequenceDefinition
+
+    def _jmad_rangeDefinition(self, range):
+        if isinstance(range, str):
+            return self._jmadSequenceDefinition.getRangeDefinition(range)
+        else:
+            return range
+
+    @property
+    def name(self):
+        return self._jmadSequenceDefinition.getName()
+
+    @property
+    def ranges(self):
+        return [str(r) for r in self._jmadSequenceDefinition.getRangeDefinitions()]
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name + str(self.ranges)
+
 
 
 class Strengths(MutableMapping):
