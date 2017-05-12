@@ -29,8 +29,11 @@ class JMad(object):
 
     @property
     def model_definitions(self):
-        return {m.getName(): ModelDefinition(m) for m in
-                self._jmadModelDefinitionManager.getAllModelDefinitions()}
+        class HtmlDict(dict):
+            def _repr_html_(self):
+                return ''.join([s._repr_html_() for s in self.values()])
+        return HtmlDict({m.getName(): ModelDefinition(m) for m in
+                self._jmadModelDefinitionManager.getAllModelDefinitions()})
 
     def create_model(self, model):
         if type(model) is str:
@@ -47,6 +50,8 @@ class JMad(object):
         jmad_gui = JMadGui(self._jmadService, prefs, None)
         jmad_gui.show()
         return jmad_gui
+
+
 
 
 class Model(object):
@@ -119,11 +124,10 @@ class Model(object):
         return Elements(self._jmadModel.getActiveRange())
 
     def __str__(self):
-        return self.name + " - " + str(self.optic) + " - " + str(self.sequence)
+        return self.name + " - " + str(self.optic) + " - " + str(self.sequence) + " - " + str(self.range)
 
     def __repr__(self):
-        return "Model(" + self.name + ", optic=" + str(self.optic) + ", sequence=" + str(self.sequence) + ")"
-
+        return self.__str__()
 
 class ModelDefinition(object):
     def __init__(self, jmadModelDefinition):
@@ -161,6 +165,24 @@ class ModelDefinition(object):
     def __repr__(self):
         return self.name + " (optics=" + str(self.optics) + ", sequences=" + str(self.sequences) + ")"
 
+    def _repr_html_(self):
+        html = '<table><thead>'
+        html += '<tr><th colspan="2"><em>' + self.name + '</em></th></tr>'
+        html += '<tr><th>Optics</th><th>Sequences</th></tr>'
+        html += '</thead><tbody><tr>'
+        html += '<td style="vertical-align:top"><ul>'
+        for r in self.optics:
+            html += '<li>'+r+'</li>'
+        html += '</ul></td>'
+        html += '<td style="vertical-align:top"><ul>'
+        for s in self.sequences:
+            html += '<li>'+s._repr_html_()+'</li>'
+        html += '</ul></td>'
+        html += '</tr></tbody></table>'
+        return html
+        
+
+
 class SequenceDefinition(object):
     def __init__(self, jmadSequenceDefinition):
         self._jmadSequenceDefinition = jmadSequenceDefinition
@@ -185,6 +207,13 @@ class SequenceDefinition(object):
     def __repr__(self):
         return self.name + str(self.ranges)
 
+    def _repr_html_(self):
+        html = '<em>' + self.name + '</em> with ranges:'
+        html += '<ul style="margin-top:0">'
+        for r in self.ranges:
+            html += '<li>'+r+'</li>'
+        html += '</ul>'
+        return html
 
 
 class Strengths(MutableMapping):
