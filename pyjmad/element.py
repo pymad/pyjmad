@@ -25,11 +25,11 @@ class Element(object):
 
     @property
     def position(self):
-        return self._jmadElement.getPosition()
+        return self._jmadElement.getPosition().getValue()
 
     @position.setter
     def position(self, position):
-        return self._jmadElement.setPosition(position)
+        return self._jmadElement.setPosition(float(position))
 
     @property
     def attributes(self):
