@@ -124,7 +124,7 @@ class Model(object):
         return Elements(self._jmadModel.getActiveRange())
 
     def __str__(self):
-        return self.name + " - " + str(self.optic) + " - " + str(self.sequence) + " - " + str(self.range)
+        return self.name + ' - ' + str(self.optic) + ' - ' + str(self.sequence) + ' - ' + str(self.range)
 
     def __repr__(self):
         return self.__str__()
@@ -163,7 +163,7 @@ class ModelDefinition(object):
         return self.name
 
     def __repr__(self):
-        return self.name + " (optics=" + str(self.optics) + ", sequences=" + str(self.sequences) + ")"
+        return self.name + ' (optics=' + str(self.optics) + ', sequences=' + str(self.sequences) + ')'
 
     def _repr_html_(self):
         html = '<table><thead>'
@@ -223,7 +223,7 @@ class Strengths(MutableMapping):
     def _jmadStrength(self, k):
         jmadStrength = self._jmadStrengthVarSet.getStrength(k)
         if jmadStrength is None:
-            raise KeyError("Invalid Strength Name: " + k)
+            raise KeyError('Invalid Strength Name: ' + k)
         return jmadStrength
 
     def __getitem__(self, k):
@@ -233,7 +233,7 @@ class Strengths(MutableMapping):
         return self._jmadStrength(k).setValue(float(v))
 
     def __delitem__(self, k):
-        raise NotImplementedError("Deletion of Strengths is not supported")
+        raise NotImplementedError('Deletion of Strengths is not supported')
 
     def __iter__(self):
         for s in self._jmadStrengthVarSet.getStrengths():
@@ -246,24 +246,30 @@ class Strengths(MutableMapping):
         return [s.getName() for s in self._jmadStrengthVarSet.getStrengths()]
 
     def __repr__(self):
-        s = "Strengths(\n"
+        s = 'Strengths(\n'
         for k, v in self.items():
-            s += "   " + k + ": " + str(v) + "\n"
-        s += ")"
+            s += '   ' + k + ': ' + str(v) + '\n'
+        s += ')'
         return s
 
     def __str__(self):
         return self.__repr__()
 
+    def _repr_html_(self):
+        s = '<table>'
+        for k, v in self.items():
+            s += '<tr><td><strong>' + k + '</strong></td><td>' + str(v) + '</td>'
+        s += '</table>'
+        return s
 
 class Elements(Mapping):
     def __init__(self, jmadRange):
+        from .element import from_jmad
         self._jmadRange = jmadRange
-        self._elementDict = {e.getName(): e for e in jmadRange.getElements()}
+        self._elementDict = {e.getName(): from_jmad(e) for e in jmadRange.getElements()}
 
     def __getitem__(self, k):
-        from .element import from_jmad
-        return from_jmad(self._elementDict[k])
+        return self._elementDict[k]
 
     def __iter__(self):
         return iter(self._elementDict)
@@ -275,14 +281,24 @@ class Elements(Mapping):
         return list(self._elementDict.keys())
 
     def __repr__(self):
-        s = "Elements(\n"
+        s = 'Elements(\n'
         for k, v in self.items():
-            s += "   " + k + " :: " + str(v) + "\n"
-        s += ")"
+            s += '   ' + k + ' :: ' + str(v) + '\n'
+        s += ')'
         return s
 
     def __str__(self):
         return self.__repr__()
+
+    def _repr_html_(self):
+        html = '<table><thead>'
+        html += '<tr><th>Element</th><th>Type</th><th>S</th><th>L</th></tr>'
+        html += '</thead><tbody><tr>'
+        for k, v in self.items():
+            html += '<tr><td><strong>' + k + '</strong></td><td>' + v.type + '</td>'
+            html += '<td>' + str(v.position) + '</td><td>' + str(v.length) + '</td>'
+        html += '</table>'
+        return html
 
 
 class _JMadVariableRepository(object):

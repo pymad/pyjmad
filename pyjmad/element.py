@@ -36,10 +36,10 @@ class Element(object):
         return Attributes(self._jmadElement)
         
     def __str__(self):
-        return str(self._jmadElement)
+        return self.name + ' (' + self.type + ')'
 
     def __repr__(self):
-        return self.__str__()
+        return self.name + ' (' + self.type + ': ' + str(self.attributes) + ')'
 
 
 def _specific_element(name, attributes):
@@ -100,7 +100,7 @@ class Attributes(MutableMapping):
         return [s for s in self._jmadElement.getAttributeNames()]
 
     def __repr__(self):
-        return "{"+', '.join([k+'='+str(v) for k,v in self.items()])+"}"
+        return '{' + ', '.join([k + '=' + str(v) for k,v in self.items()]) + '}'
 
     def __str__(self):
         return self.__repr__()
