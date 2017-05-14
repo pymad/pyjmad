@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from collections import namedtuple, MutableMapping, Mapping
+from collections import namedtuple, MutableMapping, Mapping, OrderedDict
 
 import cmmnbuild_dep_manager
 import numpy as np
@@ -47,9 +47,7 @@ class JMad(object):
         prefs.setExitOnClose(False)
         prefs.setCleanupOnClose(False)
         prefs.setMainFrame(False)
-        jmad_gui = JMadGui(self._jmadService, prefs, None)
-        jmad_gui.show()
-        return jmad_gui
+        jpype.setupGuiEnvironment(lambda: JMadGui(self._jmadService, prefs, None).show())
 
 
 
@@ -266,19 +264,32 @@ class Elements(Mapping):
     def __init__(self, jmadRange):
         from .element import from_jmad
         self._jmadRange = jmadRange
-        self._elementDict = {e.getName(): from_jmad(e) for e in jmadRange.getElements()}
+        self._elementList = [from_jmad(e) for e in jmadRange.getElements()]
+        self._nameDict = {}
+        for i,e in enumerate(self._elementList):
+            self._nameDict.setdefault(e.name, []).append(i)
 
     def __getitem__(self, k):
-        return self._elementDict[k]
+        if type(k) is int:
+            return self._elementList[k]
+        matchingElements = [self._elementList[i] for i in self._nameDict[k]]
+        if len(matchingElements) == 1:
+            return matchingElements[0]
+        else:
+            return matchingElements
 
     def __iter__(self):
-        return iter(self._elementDict)
+        return list(self._nameDict.keys())
+
+    def items(self):
+        for e in self._elementList:
+            yield (e.name, e)
 
     def __len__(self):
-        return len(self._elementDict)
+        return len(self._elementList)
 
     def _ipython_key_completions_(self):
-        return list(self._elementDict.keys())
+        return list(self._nameDict.keys())
 
     def __repr__(self):
         s = 'Elements(\n'
@@ -294,9 +305,9 @@ class Elements(Mapping):
         html = '<table><thead>'
         html += '<tr><th>Element</th><th>Type</th><th>S</th><th>L</th></tr>'
         html += '</thead><tbody><tr>'
-        for k, v in self.items():
-            html += '<tr><td><strong>' + k + '</strong></td><td>' + v.type + '</td>'
-            html += '<td>' + str(v.position) + '</td><td>' + str(v.length) + '</td>'
+        for n,e in self.items():
+            html += '<tr><td><strong>' + n + '</strong></td><td>' + e.type + '</td>'
+            html += '<td>' + str(e.position) + '</td><td>' + str(e.length) + '</td>'
         html += '</table>'
         return html
 
