@@ -261,10 +261,14 @@ class Strengths(MutableMapping):
         return s
 
 class Elements(Mapping):
-    def __init__(self, jmadRange):
+    def __init__(self, elements):
         from .element import from_jmad
-        self._jmadRange = jmadRange
-        self._elementList = [from_jmad(e) for e in jmadRange.getElements()]
+        if type(elements) is cern.accsoft.steering.jmad.domain.machine.Range:
+            self._elementList = [from_jmad(e) for e in elements.getElements()]
+        elif type(elements) is list:
+            self._elementList = elements
+        else:
+            raise ValueError('Expecting either a list of elements or a JMad Range')
         self._nameDict = {}
         for i,e in enumerate(self._elementList):
             self._nameDict.setdefault(e.name, []).append(i)
@@ -272,6 +276,24 @@ class Elements(Mapping):
     def __getitem__(self, k):
         if type(k) is int:
             return self._elementList[k]
+        if type(k) is slice:
+            if type(k.start) in (int, type(None)) and type(k.stop) in (int, type(None)) \
+                   and type(k.step) in (int, type(None)):
+               return self._elementList[k]
+            else:
+               first_name = k.start if k.start is not None else self._elementList[0]
+               last_name = k.stop if k.stop is not None else self._elementList[-1]
+               first_idx = self._nameDict[first_name]
+               if type(first_idx) is list:
+                   first_idx = first_idx[0]
+               last_idx = self._nameDict[last_name]
+               if type(last_idx) is list:
+                   last_idx = last_idx[-1]
+               if first_idx > last_idx:
+                   elements = self._elementList[first_idx:] + self._elementList[:(last_idx+1)]
+               else:
+                   elements = self._elementList[first_idx:(last_idx+1)]
+               return Elements(elements)
         matchingElements = [self._elementList[i] for i in self._nameDict[k]]
         if len(matchingElements) == 1:
             return matchingElements[0]
