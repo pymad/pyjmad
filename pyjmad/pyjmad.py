@@ -285,6 +285,10 @@ class Elements(Mapping):
         for e in self._elementList:
             yield (e.name, e)
 
+    def values(self):
+        for e in self._elementList:
+            yield e
+
     def __len__(self):
         return len(self._elementList)
 
