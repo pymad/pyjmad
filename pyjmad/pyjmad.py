@@ -4,6 +4,7 @@ from collections import namedtuple, MutableMapping, Mapping, OrderedDict
 import cmmnbuild_dep_manager
 import numpy as np
 import pandas as pd
+import re
 
 mgr = cmmnbuild_dep_manager.Manager('pyjmad')
 jpype = mgr.start_jpype_jvm()
@@ -32,8 +33,9 @@ class JMad(object):
         class HtmlDict(dict):
             def _repr_html_(self):
                 return ''.join([s._repr_html_() for s in self.values()])
+
         return HtmlDict({m.getName(): ModelDefinition(m) for m in
-                self._jmadModelDefinitionManager.getAllModelDefinitions()})
+                         self._jmadModelDefinitionManager.getAllModelDefinitions()})
 
     def create_model(self, model):
         if type(model) is str:
@@ -48,8 +50,6 @@ class JMad(object):
         prefs.setCleanupOnClose(False)
         prefs.setMainFrame(False)
         jpype.setupGuiEnvironment(lambda: JMadGui(self._jmadService, prefs, None).show())
-
-
 
 
 class Model(object):
@@ -103,7 +103,7 @@ class Model(object):
         if jmadSequence is None:
             raise ValueError('Invalid sequence: ' + sequence)
         self._jmadModel.setActiveRangeDefinition(jmadSequence.getDefaultRangeDefinition())
-    
+
     @property
     def range(self):
         return self._jmadModel.getActiveRange().getName()
@@ -111,7 +111,6 @@ class Model(object):
     @range.setter
     def range(self, range):
         return self._jmadModel.setActiveRangeDefinition(self.sequence._jmad_rangeDefinition(range))
-
 
     @property
     def strengths(self):
@@ -133,13 +132,13 @@ class Model(object):
         for arg in args:
             if isinstance(arg, LocalConstraint):
                 jmadConstraint = MatchConstraintLocal(MadxRange(arg.element))
-                for c,v in arg.constraints.items():
-                    jmadConstraint.__getattribute__('set'+(c.capitalize()))(java.lang.Double(float(v)))
+                for c, v in arg.constraints.items():
+                    jmadConstraint.__getattribute__('set' + (c.capitalize()))(java.lang.Double(float(v)))
                 jmadRequest.addMatchConstraint(jmadConstraint)
             elif isinstance(arg, GlobalConstraint):
                 jmadConstraint = MatchConstraintGlobal()
-                for c,v in arg.constraints.items():
-                    jmadConstraint.__getattribute__('set'+(c.capitalize()))(java.lang.Double(float(v)))
+                for c, v in arg.constraints.items():
+                    jmadConstraint.__getattribute__('set' + (c.capitalize()))(java.lang.Double(float(v)))
                 jmadRequest.addMatchConstraint(jmadConstraint)
             elif isinstance(arg, Vary):
                 jmadVary = MadxVaryParameterImpl(MadxParameterImpl(arg.strength))
@@ -152,7 +151,7 @@ class Model(object):
                 jmadRequest.addMadxVaryParameter(jmadVary)
             else:
                 raise ValueError('Expecting LocalConstraint, GlobalConstraint, Vary - but got ' + str(type(arg)))
-            
+
         return MatchResult(self._jmadModel.match(jmadRequest))
 
     def __str__(self):
@@ -160,6 +159,7 @@ class Model(object):
 
     def __repr__(self):
         return self.__str__()
+
 
 class ModelDefinition(object):
     def __init__(self, jmadModelDefinition):
@@ -204,15 +204,14 @@ class ModelDefinition(object):
         html += '</thead><tbody><tr>'
         html += '<td style="vertical-align:top"><ul>'
         for r in self.optics:
-            html += '<li>'+r+'</li>'
+            html += '<li>' + r + '</li>'
         html += '</ul></td>'
         html += '<td style="vertical-align:top"><ul>'
         for s in self.sequences:
-            html += '<li>'+s._repr_html_()+'</li>'
+            html += '<li>' + s._repr_html_() + '</li>'
         html += '</ul></td>'
         html += '</tr></tbody></table>'
         return html
-        
 
 
 class SequenceDefinition(object):
@@ -243,34 +242,36 @@ class SequenceDefinition(object):
         html = '<em>' + self.name + '</em> with ranges:'
         html += '<ul style="margin-top:0">'
         for r in self.ranges:
-            html += '<li>'+r+'</li>'
+            html += '<li>' + r + '</li>'
         html += '</ul>'
         return html
+
 
 class MatchResult(object):
     def __init__(self, jmadMatchResult):
         self._jmadMatchResult = jmadMatchResult
-    
+
     @property
     def final_penalty(self):
-    	return self._jmadMatchResult.getFinalPenalty()
+        return self._jmadMatchResult.getFinalPenalty()
 
     @property
     def vary_results(self):
-    	return {p.getName():p.getFinalValue() for p in self._jmadMatchResult.getVaryParameterResults()}
+        return {p.getName(): p.getFinalValue() for p in self._jmadMatchResult.getVaryParameterResults()}
 
     @property
     def constraint_results(self):
-    	return {str(p.getConstraint()):p.getFinalValue() for p in self._jmadMatchResult.getConstraintParameterResults()}
+    	return {re.sub('=\{.*?\}', '', str(p.getConstraint())):p.getFinalValue()
+    	        for p in self._jmadMatchResult.getConstraintParameterResults()}
 
     def __str__(self):
         return 'Match Result ->> final penalty: ' + str(self.final_penalty)
-    
+
     def __repr__(self):
         return 'Match Result ->> final penalty: ' + str(self.final_penalty) + '\n' + \
                '   Vary Results: ' + repr(self.vary_results) + '\n' + \
                '   Constraint Results: ' + repr(self.constraint_results) + '\n'
-    
+
 
 class Strengths(MutableMapping):
     def __init__(self, jmadStrengthVarSet):
@@ -318,6 +319,7 @@ class Strengths(MutableMapping):
         s += '</table>'
         return s
 
+
 class Elements(Mapping):
     def __init__(self, elements):
         from .element import from_jmad
@@ -328,7 +330,7 @@ class Elements(Mapping):
         else:
             raise ValueError('Expecting either a list of elements or a JMad Range')
         self._nameDict = {}
-        for i,e in enumerate(self._elementList):
+        for i, e in enumerate(self._elementList):
             self._nameDict.setdefault(e.name, []).append(i)
 
     def __getitem__(self, k):
@@ -336,22 +338,22 @@ class Elements(Mapping):
             return self._elementList[k]
         if type(k) is slice:
             if type(k.start) in (int, type(None)) and type(k.stop) in (int, type(None)) \
-                   and type(k.step) in (int, type(None)):
-               return self._elementList[k]
+                    and type(k.step) in (int, type(None)):
+                return self._elementList[k]
             else:
-               first_name = k.start if k.start is not None else self._elementList[0]
-               last_name = k.stop if k.stop is not None else self._elementList[-1]
-               first_idx = self._nameDict[first_name]
-               if type(first_idx) is list:
-                   first_idx = first_idx[0]
-               last_idx = self._nameDict[last_name]
-               if type(last_idx) is list:
-                   last_idx = last_idx[-1]
-               if first_idx > last_idx:
-                   elements = self._elementList[first_idx:] + self._elementList[:(last_idx+1)]
-               else:
-                   elements = self._elementList[first_idx:(last_idx+1)]
-               return Elements(elements)
+                first_name = k.start if k.start is not None else self._elementList[0]
+                last_name = k.stop if k.stop is not None else self._elementList[-1]
+                first_idx = self._nameDict[first_name]
+                if type(first_idx) is list:
+                    first_idx = first_idx[0]
+                last_idx = self._nameDict[last_name]
+                if type(last_idx) is list:
+                    last_idx = last_idx[-1]
+                if first_idx > last_idx:
+                    elements = self._elementList[first_idx:] + self._elementList[:(last_idx + 1)]
+                else:
+                    elements = self._elementList[first_idx:(last_idx + 1)]
+                return Elements(elements)
         matchingElements = [self._elementList[i] for i in self._nameDict[k]]
         if len(matchingElements) == 1:
             return matchingElements[0]
@@ -389,7 +391,7 @@ class Elements(Mapping):
         html = '<table><thead>'
         html += '<tr><th>Element</th><th>Type</th><th>S</th><th>L</th></tr>'
         html += '</thead><tbody><tr>'
-        for n,e in self.items():
+        for n, e in self.items():
             html += '<tr><td><strong>' + n + '</strong></td><td>' + e.type + '</td>'
             html += '<td>' + str(e.position) + '</td><td>' + str(e.length) + '</td>'
         html += '</table>'
@@ -421,6 +423,7 @@ MadxTwissVariable = _JMadVariableRepository(cern.accsoft.steering.jmad.domain.va
 MadxGlobalVariable = _JMadVariableRepository(cern.accsoft.steering.jmad.domain.var.enums.MadxGlobalVariable)
 
 TfsResult = namedtuple('TfsResult', ['summary', 'data'])
+
 
 def _jmad_TfsResult_to_pandas(tfs_result):
     summ = tfs_result.getSummary()
