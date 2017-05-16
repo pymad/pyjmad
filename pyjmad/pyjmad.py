@@ -121,6 +121,40 @@ class Model(object):
     def elements(self):
         return Elements(self._jmadModel.getActiveRange())
 
+    def match(self, *args):
+        MatchResultRequestImpl = cern.accsoft.steering.jmad.domain.result.match.MatchResultRequestImpl
+        MadxVaryParameterImpl = cern.accsoft.steering.jmad.domain.result.match.input.MadxVaryParameterImpl
+        MatchConstraintGlobal = cern.accsoft.steering.jmad.domain.result.match.input.MatchConstraintGlobal
+        MatchConstraintLocal = cern.accsoft.steering.jmad.domain.result.match.input.MatchConstraintLocal
+        MadxParameterImpl = cern.accsoft.steering.jmad.domain.knob.MadxParameterImpl
+        MadxRange = cern.accsoft.steering.jmad.domain.machine.MadxRange
+        from .matching import LocalConstraint, GlobalConstraint, Vary
+        jmadRequest = MatchResultRequestImpl()
+        for arg in args:
+            if isinstance(arg, LocalConstraint):
+                jmadConstraint = MatchConstraintLocal(MadxRange(arg.element))
+                for c,v in arg.constraints.items():
+                    jmadConstraint.__getattribute__('set'+(c.capitalize()))(java.lang.Double(float(v)))
+                jmadRequest.addMatchConstraint(jmadConstraint)
+            elif isinstance(arg, GlobalConstraint):
+                jmadConstraint = MatchConstraintGlobal()
+                for c,v in arg.constraints.items():
+                    jmadConstraint.__getattribute__('set'+(c.capitalize()))(java.lang.Double(float(v)))
+                jmadRequest.addMatchConstraint(jmadConstraint)
+            elif isinstance(arg, Vary):
+                jmadVary = MadxVaryParameterImpl(MadxParameterImpl(arg.strength))
+                if arg.lower_bound is not None:
+                    jmadVary.setLower(java.lang.Double(float(arg.lower_bound)))
+                if arg.upper_bound is not None:
+                    jmadVary.setUpper(java.lang.Double(float(arg.upper_bound)))
+                if arg.step is not None:
+                    jmadVary.setStep(java.lang.Double(float(arg.step)))
+                jmadRequest.addMadxVaryParameter(jmadVary)
+            else:
+                raise ValueError('Expecting LocalConstraint, GlobalConstraint, Vary - but got ' + str(type(arg)))
+            
+        return MatchResult(self._jmadModel.match(jmadRequest))
+
     def __str__(self):
         return self.name + ' - ' + str(self.optic) + ' - ' + str(self.sequence) + ' - ' + str(self.range)
 
@@ -213,6 +247,30 @@ class SequenceDefinition(object):
         html += '</ul>'
         return html
 
+class MatchResult(object):
+    def __init__(self, jmadMatchResult):
+        self._jmadMatchResult = jmadMatchResult
+    
+    @property
+    def final_penalty(self):
+    	return self._jmadMatchResult.getFinalPenalty()
+
+    @property
+    def vary_results(self):
+    	return {p.getName():p.getFinalValue() for p in self._jmadMatchResult.getVaryParameterResults()}
+
+    @property
+    def constraint_results(self):
+    	return {str(p.getConstraint()):p.getFinalValue() for p in self._jmadMatchResult.getConstraintParameterResults()}
+
+    def __str__(self):
+        return 'Match Result ->> final penalty: ' + str(self.final_penalty)
+    
+    def __repr__(self):
+        return 'Match Result ->> final penalty: ' + str(self.final_penalty) + '\n' + \
+               '   Vary Results: ' + repr(self.vary_results) + '\n' + \
+               '   Constraint Results: ' + repr(self.constraint_results) + '\n'
+    
 
 class Strengths(MutableMapping):
     def __init__(self, jmadStrengthVarSet):
@@ -360,9 +418,9 @@ class _JMadVariableRepository(object):
 
 
 MadxTwissVariable = _JMadVariableRepository(cern.accsoft.steering.jmad.domain.var.enums.MadxTwissVariable)
+MadxGlobalVariable = _JMadVariableRepository(cern.accsoft.steering.jmad.domain.var.enums.MadxGlobalVariable)
 
 TfsResult = namedtuple('TfsResult', ['summary', 'data'])
-
 
 def _jmad_TfsResult_to_pandas(tfs_result):
     summ = tfs_result.getSummary()
