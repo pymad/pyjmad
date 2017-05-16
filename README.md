@@ -86,7 +86,8 @@ mr = lhcModel.match(LocalConstraint('IP1', BETX=0.45, BETY=0.45),
 ```
 
 
-Open a JMad GUI (sharing the state with the python script) for interactive exploration:
+### Open a JMad GUI
+The GUI will share the state with the python script and can be used for interactive exploration. Note that on Mac OS X this currently blocks the main python thread due to Swing/Cocoa/GUI API limitations.
 ```python
 jmad.open_jmad_gui()
 ```
