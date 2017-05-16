@@ -21,7 +21,7 @@ class Element(object):
 
     @length.setter
     def length(self, len):
-        return self._jmadElement.getLength(float(len))
+        self._jmadElement.getLength(float(len))
 
     @property
     def position(self):
@@ -29,12 +29,12 @@ class Element(object):
 
     @position.setter
     def position(self, position):
-        return self._jmadElement.setPosition(float(position))
+        self._jmadElement.setPosition(float(position))
 
     @property
     def attributes(self):
         return Attributes(self._jmadElement)
-        
+
     def __str__(self):
         return self.name + ' (' + self.type + ')'
 
@@ -46,13 +46,18 @@ def _specific_element(name, attributes):
     attr_dict = {}
     for attr in attributes:
         java_name = ''.join([s.capitalize() for s in attr.split('_')])
-        p = property(lambda self, java_name=java_name: self._jmadElement.__getattribute__('get'+java_name)()) \
-             .setter(lambda self, v, java_name=java_name: self._jmadElement.__getattribute__('set'+java_name)(float(v))) 
+        p = property(lambda self, java_name=java_name: self._jmadElement.__getattribute__('get' + java_name)()) \
+            .setter(
+            lambda self, v, java_name=java_name: self._jmadElement.__getattribute__('set' + java_name)(float(v)))
         attr_dict[attr] = p
     return type(name, (Element,), attr_dict)
 
-BeamBeam = _specific_element('BeamBeam', ['charge', 'direction', 'displacement_x', 'displacement_y', 'shape', 'sig_x', 'sig_y', 'width'])
-Bend = _specific_element('Bend', ['angle', 'e1', 'e2', 'fint', 'fint_x', 'h1', 'h2', 'h_gap', 'k0', 'k1', 'k2', 'k3', 'tilt'])
+
+BeamBeam = _specific_element('BeamBeam',
+                             ['charge', 'direction', 'displacement_x', 'displacement_y', 'shape', 'sig_x', 'sig_y',
+                              'width'])
+Bend = _specific_element('Bend',
+                         ['angle', 'e1', 'e2', 'fint', 'fint_x', 'h1', 'h2', 'h_gap', 'k0', 'k1', 'k2', 'k3', 'tilt'])
 Corrector = _specific_element('Corrector', ['h_kick', 'tilt', 'v_kick'])
 Marker = _specific_element('Marker', [])
 Monitor = _specific_element('Monitor', [])
@@ -100,7 +105,7 @@ class Attributes(MutableMapping):
         return [s for s in self._jmadElement.getAttributeNames()]
 
     def __repr__(self):
-        return '{' + ', '.join([k + '=' + str(v) for k,v in self.items()]) + '}'
+        return '{' + ', '.join([k + '=' + str(v) for k, v in self.items()]) + '}'
 
     def __str__(self):
         return self.__repr__()
