@@ -4,6 +4,7 @@ from collections import namedtuple, MutableMapping, Mapping, OrderedDict
 import cmmnbuild_dep_manager
 import numpy as np
 import pandas as pd
+import re
 
 mgr = cmmnbuild_dep_manager.Manager('pyjmad')
 jpype = mgr.start_jpype_jvm()
@@ -261,7 +262,8 @@ class MatchResult(object):
 
     @property
     def constraint_results(self):
-    	return {str(p.getConstraint()):p.getFinalValue() for p in self._jmadMatchResult.getConstraintParameterResults()}
+    	return {re.sub('=\{.*?\}', '', str(p.getConstraint())):p.getFinalValue() \
+    	         for p in self._jmadMatchResult.getConstraintParameterResults()}
 
     def __str__(self):
         return 'Match Result ->> final penalty: ' + str(self.final_penalty)
