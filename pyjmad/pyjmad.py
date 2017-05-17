@@ -437,8 +437,11 @@ def _jmad_TfsResult_to_pandas(tfs_result):
         else:
             val = None
         summ_dict[var] = val
-    result_df = pd.DataFrame()
+    names = np.array(Iterables.toArray(tfs_result.getStringData('NAME'), java.lang.String().getClass())[:])
+    result_df = pd.DataFrame(index=names)
     for var in tfs_result.getKeys():
+        if var == 'NAME':
+            continue
         vt = str(tfs_result.getVarType(var))
         if vt == 'STRING':
             col = np.array(Iterables.toArray(tfs_result.getStringData(var), java.lang.String().getClass())[:])
