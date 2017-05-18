@@ -9,8 +9,8 @@ addons:
     - sshpass
 
 install:
-  - pip install -U urllib3
-  - pip install -U requests
+  - pip install --upgrade urllib3
+  - pip install --upgrade requests
   - pip install pytest
   - pip install numpy
   - pip install pandas
