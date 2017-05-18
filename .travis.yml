@@ -12,10 +12,11 @@ install:
   - pip install numpy
   - pip install pandas
   - pip install cmmnbuild_dep_manager
-  - sshpass -e ssh -N -D 1080 opsw@lxplus.cern.ch
+  - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 1080 opsw@lxplus.cern.ch &
   - export HTTP_PROXY="socks5://localhost:1080/"
   - export HTTPS_PROXY="socks5://localhost:1080/"
   - pip install -e .
+  - killall ssh sshpass
 
 script:
   - pytest tests
