@@ -8,14 +8,11 @@ import pyjmad
 
 class install(_install):
     def run(self):
-        try:
-            print('registering cmmnbuild_dep_manager')
-            import cmmnbuild_dep_manager
-            mgr = cmmnbuild_dep_manager.Manager()
-            mgr.install('pyjmad')
-            print('registered pylsa with cmmnbuild_dep_manager')
-        except ImportError as e:
-            print(e)
+        print('registering cmmnbuild_dep_manager')
+        import cmmnbuild_dep_manager
+        mgr = cmmnbuild_dep_manager.Manager()
+        mgr.install('pyjmad')
+        print('registered pylsa with cmmnbuild_dep_manager')
         _install.run(self)
 
 setuptools.setup(
