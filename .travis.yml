@@ -16,8 +16,8 @@ install:
   - pip install cmmnbuild_dep_manager
   - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 51080 opsw@lxplus.cern.ch &
   - sleep 8
-  - export HTTP_PROXY="socks5://localhost:51080/"
-  - export HTTPS_PROXY="socks5://localhost:51080/"
+  - export HTTP_PROXY="socks5h://localhost:51080/"
+  - export HTTPS_PROXY="socks5h://localhost:51080/"
   - pip install .
   - which java
   - find /home/travis/virtualenv/python3.5.2/lib/python3.5/
