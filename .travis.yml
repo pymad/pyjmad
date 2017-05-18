@@ -18,7 +18,8 @@ install:
   - export HTTP_PROXY="socks5://localhost:51080/"
   - export HTTPS_PROXY="socks5://localhost:51080/"
   - pip install -e .
-  - python -m cmmnbuild_dep_manager resolve
+  - which java
+  - find /home/travis/virtualenv/python3.5.2/lib/python3.5/
   - killall ssh sshpass
 
 script:
