@@ -11,6 +11,7 @@ addons:
 install:
   - pip install numpy
   - pip install pandas
+  - pip install requests[socks]
   - pip install cmmnbuild_dep_manager
   - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 1080 opsw@lxplus.cern.ch &
   - export HTTP_PROXY="socks5://localhost:1080/"
