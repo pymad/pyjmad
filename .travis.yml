@@ -14,7 +14,7 @@ install:
   - pip install requests[socks]
   - pip install cmmnbuild_dep_manager
   - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 51080 opsw@lxplus.cern.ch &
-  - sleep 5
+  - sleep 8
   - export HTTP_PROXY="socks5://localhost:51080/"
   - export HTTPS_PROXY="socks5://localhost:51080/"
   - pip install .
