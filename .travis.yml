@@ -13,9 +13,10 @@ install:
   - pip install pandas
   - pip install requests[socks]
   - pip install cmmnbuild_dep_manager
-  - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 1080 opsw@lxplus.cern.ch &
-  - export HTTP_PROXY="socks5://localhost:1080/"
-  - export HTTPS_PROXY="socks5://localhost:1080/"
+  - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 51080 opsw@lxplus.cern.ch &
+  - export HTTP_PROXY="socks5://localhost:51080/"
+  - export HTTPS_PROXY="socks5://localhost:51080/"
+  - ps aux | grep ssh
   - pip install -e .
   - killall ssh sshpass
 
