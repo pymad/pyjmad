@@ -11,10 +11,10 @@ addons:
 install:
   - pip install --upgrade urllib3
   - pip install --upgrade requests
+  - pip install --upgrade requests[socks]
   - pip install pytest
   - pip install numpy
   - pip install pandas
-  - pip install requests[socks]
   - pip install cmmnbuild_dep_manager
   - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 51080 opsw@lxplus.cern.ch &
   - sleep 8
