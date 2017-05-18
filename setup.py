@@ -23,7 +23,6 @@ setuptools.setup(
     author_email='michi.hostettler@cern.ch',
     url='https://github.com/michi42/pyjmad',
     packages=['pyjmad'],
-    package_dir={'pyjmad': 'pyjmad'},
     install_requires=['JPype1>=0.6.1',
                       'cmmnbuild-dep-manager>=2.1.0' ],
     cmdclass={ 'install': install },
