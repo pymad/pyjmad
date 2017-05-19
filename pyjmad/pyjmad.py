@@ -13,6 +13,7 @@ if not hasattr(site, 'getusersitepackages'):
 mgr = cmmnbuild_dep_manager.Manager('pyjmad', logging.INFO)
 print(mgr.jars())
 jpype = mgr.start_jpype_jvm()
+print('JAVA PATH: '+jpype.getDefaultJVMPath())
 
 cern = jpype.JPackage('cern')
 org = jpype.JPackage('org')

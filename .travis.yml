@@ -16,6 +16,7 @@ install:
   - pip install .
   - python .travis-setup-jars.py
   - which java
+  - java -version
   - find /home/travis/virtualenv/python3.5.2/lib/python3.5/
 
 script:
