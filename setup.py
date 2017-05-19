@@ -5,7 +5,6 @@ import setuptools
 from setuptools.command.install import install as _install
 
 import pyjmad
-import os, site
 
 class install(_install):
     def run(self):

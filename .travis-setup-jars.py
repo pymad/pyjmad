@@ -6,8 +6,8 @@ import os, pipes, signal, socket, time, site
 print('Hack to fetch required JARs from CERN')
 pid = Popen('sshpass -e ssh -oStrictHostKeyChecking=no -N -D 51080 '+pipes.quote(os.environ['SSHUSER']), shell=True).pid
 
-for i in range(0,30):
-    time.sleep(1)
+for i in range(0,60):
+    time.sleep(2)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(2)
     result = sock.connect_ex(('127.0.0.1',51080))
