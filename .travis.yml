@@ -17,7 +17,6 @@ install:
   - python .travis-setup-jars.py
   - which java
   - find /home/travis/virtualenv/python3.5.2/lib/python3.5/
-  - killall ssh sshpass
 
 script:
   - pytest tests

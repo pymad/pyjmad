@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from subprocess import Popen
-import os, pipes, signal, socket, time, site
+import os, pipes, signal, socket, time, site, logging
 
 print('Hack to fetch required JARs from CERN')
 pid = Popen('sshpass -e ssh -oStrictHostKeyChecking=no -N -D 51080 '+pipes.quote(os.environ['SSHUSER']), shell=True).pid
@@ -27,6 +27,7 @@ if not hasattr(site, 'getusersitepackages'):
 print('Stage set, triggering JAR fetching ...')
 import cmmnbuild_dep_manager
 mgr = cmmnbuild_dep_manager.Manager()
+mgr.set_logging_level(logging.INFO)
 mgr.install('pyjmad')
 mgr.resolve()
 

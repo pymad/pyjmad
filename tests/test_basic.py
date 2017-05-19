@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from pyjmad import pyjmad
 import pyjmad
 import numpy as np
 
