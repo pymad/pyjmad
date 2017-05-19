@@ -4,19 +4,22 @@ from collections import namedtuple, MutableMapping, Mapping, OrderedDict
 import cmmnbuild_dep_manager
 import numpy as np
 import pandas as pd
-import re, site
+import re, site, logging
 
 if not hasattr(site, 'getusersitepackages'):
     print('running in VirtualEnv, monkey-patching site module')
     site.getusersitepackages = lambda: ''
 
-mgr = cmmnbuild_dep_manager.Manager('pyjmad')
+mgr = cmmnbuild_dep_manager.Manager('pyjmad', logging.INFO)
+print(mgr.jars())
 jpype = mgr.start_jpype_jvm()
 
 cern = jpype.JPackage('cern')
 org = jpype.JPackage('org')
 java = jpype.JPackage('java')
 com = jpype.JPackage('com')
+
+print(cern.accsoft.steering.jmad.domain.var.enums.MadxTwissVariable)
 
 JMadServiceFactory = cern.accsoft.steering.jmad.service.JMadServiceFactory
 Doubles = com.google.common.primitives.Doubles
