@@ -4,7 +4,11 @@ from collections import namedtuple, MutableMapping, Mapping, OrderedDict
 import cmmnbuild_dep_manager
 import numpy as np
 import pandas as pd
-import re
+import re, site
+
+if not hasattr(site, 'getusersitepackages'):
+    print('running in VirtualEnv, monkey-patching site module')
+    site.getusersitepackages = lambda: ''
 
 mgr = cmmnbuild_dep_manager.Manager('pyjmad')
 jpype = mgr.start_jpype_jvm()
@@ -119,6 +123,10 @@ class Model(object):
     @property
     def elements(self):
         return Elements(self._jmadModel.getActiveRange())
+    
+    @property
+    def beam(self):
+        return Beam(self._jmadModel.getActiveRange().getRangeDefinition().getSequenceDefinition().getBeam())
 
     def match(self, *args):
         MatchResultRequestImpl = cern.accsoft.steering.jmad.domain.result.match.MatchResultRequestImpl
@@ -213,6 +221,97 @@ class ModelDefinition(object):
         html += '</tr></tbody></table>'
         return html
 
+class Beam(object):
+    def __init__(self, jmadBeam):
+        self._jmadBeam = jmadBeam
+        
+    @property
+    def bunch_current(self):
+        return _unbox_double(self._jmadBeam.getBunchCurrent())
+
+    @property
+    def bunch_length(self):
+        return _unbox_double(self._jmadBeam.getBunchLength())
+
+    @property
+    def bunch_number(self):
+        return _unbox_integer(self._jmadBeam.getBunchNumber())
+
+    @property
+    def is_bunched(self):
+        return _unbox_boolean(self._jmadBeam.getBunched())
+    
+    @property
+    def charge(self):
+        return _unbox_double(self._jmadBeam.getCharge())
+        
+    @property
+    def direction(self):
+        v = self._jmadBeam.getDirection()
+        if str(v) == 'PLUS':
+            return +1
+        elif str(v) == 'MINUS':
+            return -1
+        else:
+            return None
+
+    @property
+    def energy(self):
+        return _unbox_double(self._jmadBeam.getEnergy())
+
+    @property
+    def gamma(self):
+        return _unbox_double(self._jmadBeam.getGamma())
+
+    @property
+    def emittance_pysical_h(self):
+        return _unbox_double(self._jmadBeam.getHorizontalEmittance())
+
+    @property
+    def emittance_pysical_v(self):
+        return _unbox_double(self._jmadBeam.getVerticalEmittance())
+
+    @property
+    def mass(self):
+        return _unbox_double(self._jmadBeam.getMass())
+
+    @property
+    def momentum(self):
+        return _unbox_double(self._jmadBeam.getMomentum())
+
+    @property
+    def emittance_normalized_h(self):
+        return _unbox_double(self._jmadBeam.getNormalisedHorizontalEmittance())
+
+    @property
+    def emittance_normalized_v(self):
+        return _unbox_double(self._jmadBeam.getNormalisedVerticalEmittance())
+
+    @property
+    def particle(self):
+        v = self._jmadBeam.getParticle()
+        if v is None:
+            return None
+        else:
+            return str(v)
+
+    @property
+    def radiate(self):
+        return _unbox_boolean(self._jmadBeam.getRadiate())
+
+    @property
+    def relative_energy_spread(self):
+        return _unbox_double(self._jmadBeam.getRelativeEnergySpread())
+
+    def __str__(self):
+        return self.particle + ' beam @ ' + str(self.energy) + ' GeV'
+
+    def __repr__(self):
+        s = self.__str__() + '\n'
+        for f in dir(self):
+            if not f.startswith('_') and self.__getattribute__(f) is not None:
+                s += '   ' + f + ' = ' + str(self.__getattribute__(f)) + '\n'
+        return s
 
 class SequenceDefinition(object):
     def __init__(self, jmadSequenceDefinition):
@@ -451,3 +550,21 @@ def _jmad_TfsResult_to_pandas(tfs_result):
             col = None
         result_df[var] = col
     return TfsResult(summary=summ_dict, data=result_df)
+
+def _unbox_double(v):
+    if v is None:
+        return None
+    else:
+        return v.doubleValue()
+
+def _unbox_integer(v):
+    if v is None:
+        return None
+    else:
+        return v.intValue()
+
+def _unbox_boolean(v):
+    if v is None:
+        return None
+    else:
+        return True if v.booleanValue() == 1 else False

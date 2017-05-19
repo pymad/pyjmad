@@ -11,6 +11,9 @@ class install(_install):
         print('registering cmmnbuild_dep_manager')
         try:
             import cmmnbuild_dep_manager
+            if not hasattr(site, 'getusersitepackages'):
+                print('running in VirtualEnv, monkey-patching site module')
+                site.getusersitepackages = lambda: ''
             mgr = cmmnbuild_dep_manager.Manager()
             mgr.install('pyjmad')
             print('registered pyjmad with cmmnbuild_dep_manager')
