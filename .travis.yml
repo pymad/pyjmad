@@ -7,6 +7,7 @@ addons:
   apt:
     packages:
     - sshpass
+    - openjdk-8-jdk
 
 install:
   - pip install --upgrade urllib3
@@ -17,6 +18,9 @@ install:
   - python .travis-setup-jars.py
   - which java
   - java -version
+  - ls -la /usr/lib/jdk/
+  - ls -la /usr/lib/jvm/
+  - ls -la /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
   - find /home/travis/virtualenv/python3.5.2/lib/python3.5/
 
 script:
