@@ -27,6 +27,7 @@ if not hasattr(site, 'getusersitepackages'):
 print('Stage set, triggering JAR fetching ...')
 import cmmnbuild_dep_manager
 mgr = cmmnbuild_dep_manager.Manager()
+mgr.install('pyjmad')
 mgr.resolve()
 
 os.kill(pid, signal.SIGTERM)
