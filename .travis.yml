@@ -10,7 +10,7 @@ addons:
     - openjdk-8-jdk
 
 env:
-  - JAVA_JVM_LIB="/usr/lib/jvm/java-7-oracle/jre/lib/amd64/server/libjvm.so"
+  - JAVA_JVM_LIB="/usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so"
 
 install:
   - pip install --upgrade urllib3
