@@ -13,16 +13,8 @@ install:
   - pip install --upgrade requests
   - pip install --upgrade requests[socks]
   - pip install pytest
-  - pip install numpy
-  - pip install pandas
-  - pip install --upgrade pip
-  - pip install cmmnbuild_dep_manager
-  - pip install JPype1
-  - sshpass -e ssh -oStrictHostKeyChecking=no -N -D 51080 opsw@lxplus.cern.ch &
-  - sleep 8
-  - export HTTP_PROXY="socks5h://localhost:51080/"
-  - export HTTPS_PROXY="socks5h://localhost:51080/"
   - pip install .
+  - python .travis-setup-jars.py
   - which java
   - find /home/travis/virtualenv/python3.5.2/lib/python3.5/
   - killall ssh sshpass

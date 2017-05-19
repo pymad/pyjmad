@@ -10,13 +10,13 @@ import os, site
 class install(_install):
     def run(self):
         print('registering cmmnbuild_dep_manager')
-        if not hasattr(site, 'getusersitepackages'):
-            print('running in VirtualEnv, monkey-patching site module')
-            site.getusersitepackages = lambda: ''
-        import cmmnbuild_dep_manager
-        mgr = cmmnbuild_dep_manager.Manager()
-        mgr.install('pyjmad')
-        print('registered pylsa with cmmnbuild_dep_manager')
+        try:
+            import cmmnbuild_dep_manager
+            mgr = cmmnbuild_dep_manager.Manager()
+            mgr.install('pyjmad')
+            print('registered pyjmad with cmmnbuild_dep_manager')
+        except:
+            print('WARNING: could not register with cmmnbuild_dep_manager')
         _install.run(self)
 
 setuptools.setup(
