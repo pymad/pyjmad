@@ -3,9 +3,8 @@
 import pyjmad
 import numpy as np
 
-jmad = pyjmad.JMad()
-
 def test_slice_elements():
+    jmad = pyjmad.JMad()
     lhcModel = jmad.create_model('LHC 2017')
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
@@ -14,6 +13,7 @@ def test_slice_elements():
     assert len(lhcModel.elements['BPM.10L5.B1':'BPM.10R5.B1']) > 300
 
 def test_set_quatrupole():
+    jmad = pyjmad.JMad()
     lhcModel = jmad.create_model('LHC 2017')
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'

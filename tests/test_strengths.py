@@ -3,10 +3,8 @@
 import pyjmad
 import numpy as np
 
-jmad = pyjmad.JMad()
-
-
 def test_strength_list():
+    jmad = pyjmad.JMad()
     lhcModel = jmad.create_model('LHC 2017')
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
@@ -30,6 +28,7 @@ def fit_crossing_angle_ip5(lhcModel):
 
 
 def test_strength_manipulation_crossing_angle():
+    jmad = pyjmad.JMad()
     lhcModel = jmad.create_model('LHC 2017')
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
@@ -50,6 +49,7 @@ def test_strength_manipulation_crossing_angle():
     assert abs(ip5_xing_y) < 0.01
 
 def test_strength_manipulation_tune():
+    jmad = pyjmad.JMad()
     lhcModel = jmad.create_model('LHC 2017')
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'

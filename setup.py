@@ -8,13 +8,17 @@ import pyjmad
 
 class install(_install):
     def run(self):
+        print('registering cmmnbuild_dep_manager')
         try:
             import cmmnbuild_dep_manager
+            if not hasattr(site, 'getusersitepackages'):
+                print('running in VirtualEnv, monkey-patching site module')
+                site.getusersitepackages = lambda: ''
             mgr = cmmnbuild_dep_manager.Manager()
             mgr.install('pyjmad')
-            print('registered pylsa with cmmnbuild_dep_manager')
-        except ImportError:
-            pass
+            print('registered pyjmad with cmmnbuild_dep_manager')
+        except:
+            print('WARNING: could not register with cmmnbuild_dep_manager')
         _install.run(self)
 
 setuptools.setup(
@@ -25,8 +29,8 @@ setuptools.setup(
     author_email='michi.hostettler@cern.ch',
     url='https://github.com/michi42/pyjmad',
     packages=['pyjmad'],
-    package_dir={'pyjmad': 'pyjmad'},
     install_requires=['JPype1>=0.6.1',
-                      'cmmnbuild-dep-manager>=2.1.0' ],
+                      'cmmnbuild-dep-manager>=2.1.0',
+                      'numpy', 'pandas'],
     cmdclass={ 'install': install },
 )
