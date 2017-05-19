@@ -1,4 +1,5 @@
 # PyJMad
+[![Build Status](https://travis-ci.org/pymad/pyjmad.svg?branch=master)](https://travis-ci.org/pymad/pyjmad)
 Yet another python wrapper around JMad using JPype. PyJMad aims for compatibility with other CERN Java-Python bridges, using cmmnbuild-dep-manager (and access to CERN resources) for easy side-by-side installation. A particular focus lies on interactive usage and integration with IPython/Jupyter.
 
 ### Set up:
