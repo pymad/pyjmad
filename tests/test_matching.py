@@ -4,9 +4,9 @@ import pyjmad
 import numpy as np
 from pyjmad.matching import *
 
-jmad = pyjmad.JMad()
 
 def test_match_global_tune():
+    jmad = pyjmad.JMad()
     lhcModel = jmad.create_model('LHC 2017')
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
@@ -24,6 +24,7 @@ def test_match_global_tune():
     assert abs(summary['Q2']-60.31) < 0.005
 
 def test_match_local_beta():
+    jmad = pyjmad.JMad()
     lhcModel = jmad.create_model('LHC 2017')
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
