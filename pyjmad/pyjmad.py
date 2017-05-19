@@ -10,10 +10,8 @@ if not hasattr(site, 'getusersitepackages'):
     print('running in VirtualEnv, monkey-patching site module')
     site.getusersitepackages = lambda: ''
 
-mgr = cmmnbuild_dep_manager.Manager('pyjmad', logging.INFO)
-print(mgr.jars())
+mgr = cmmnbuild_dep_manager.Manager('pyjmad')
 jpype = mgr.start_jpype_jvm()
-print('JAVA PATH: '+jpype.getDefaultJVMPath())
 
 cern = jpype.JPackage('cern')
 org = jpype.JPackage('org')

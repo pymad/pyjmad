@@ -9,6 +9,9 @@ addons:
     - sshpass
     - openjdk-8-jdk
 
+env:
+  - JAVA_JVM_LIB="/usr/lib/jvm/java-7-oracle/jre/lib/amd64/server/libjvm.so"
+
 install:
   - pip install --upgrade urllib3
   - pip install --upgrade requests
@@ -16,11 +19,6 @@ install:
   - pip install pytest
   - pip install .
   - python .travis-setup-jars.py
-  - which java
-  - java -version
-  - ls -la /usr/lib/jvm/
-  - update-alternatives --config java
-  - find /home/travis/virtualenv/python3.5.2/lib/python3.5/
 
 script:
   - pytest tests
