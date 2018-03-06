@@ -1,8 +1,9 @@
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 __cmmnbuild_deps__ = [
     "accmodel-jmad-core",
     "accmodel-jmad-models-lhc",
+    "accmodel-jmad-models-gsi",
     "accmodel-jmad-models-lhctransfer",
     "accsoft-steering-commons",
     "accmodel-jmad-gui",
