@@ -28,5 +28,8 @@ setuptools.setup(
     install_requires=['JPype1>=0.6.1',
                       'cmmnbuild-dep-manager>=2.2.0',
                       'numpy', 'pandas'],
+    dependency_links=[
+        'git+https://gitlab.cern.ch/mihostet/cmmnbuild-dep-manager.git',
+    ],
     cmdclass={'install': install},
 )
