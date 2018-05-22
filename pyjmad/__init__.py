@@ -1,4 +1,4 @@
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 __cmmnbuild_deps__ = [
     "accmodel-jmad-core",
@@ -12,6 +12,13 @@ __cmmnbuild_deps__ = [
     "log4j"
 ]
 
+__gradle_deps__ = [
+    "jmad:jmad-core:+",
+    "org.slf4j:slf4j-api:+",
+    "org.slf4j:slf4j-log4j12:+",
+    "log4j:log4j:1.2.17",
+]
+
 # When running setuptools without required dependencies installed
 # we need to be able to access __version__, so print a warning but
 # continue
@@ -20,6 +27,7 @@ try:
     from . import element, matching
 except:
     import logging
+
     logging.basicConfig()
     log = logging.getLogger(__name__)
     log.warning("required dependencies are not installed")
