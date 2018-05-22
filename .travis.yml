@@ -16,8 +16,6 @@ install:
   - pip install git+https://gitlab.cern.ch/mihostet/cmmnbuild-dep-manager.git
   - pip install .
   - python -m cmmnbuild_dep_manager resolve
-  - python -m cmmnbuild_dep_manager resolve
-  - ls -la /home/travis/virtualenv/python3.5.5/lib/python3.5/site-packages/cmmnbuild_dep_manager/lib
 
 script:
   - pytest tests
