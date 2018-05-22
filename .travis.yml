@@ -6,19 +6,15 @@ python:
 addons:
   apt:
     packages:
-    - sshpass
     - openjdk-8-jdk
 
 env:
   - JAVA_JVM_LIB="/usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so"
 
 install:
-  - pip install --upgrade urllib3
-  - pip install --upgrade requests
-  - pip install --upgrade requests[socks]
   - pip install pytest
+  - pip install git+https://gitlab.cern.ch/mihostet/cmmnbuild-dep-manager.git
   - pip install .
-  - python .travis-setup-jars.py
 
 script:
   - pytest tests
