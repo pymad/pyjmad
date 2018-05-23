@@ -16,6 +16,13 @@ org = jpype.JPackage('org')
 java = jpype.JPackage('java')
 com = jpype.JPackage('com')
 
+org.apache.log4j.BasicConfigurator.configure()
+org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.INFO)
+from .spring import SpringApplicationContext
+
+from .modelpack import JMadModelPackService
+from .util import *
+
 JMadServiceFactory = cern.accsoft.steering.jmad.service.JMadServiceFactory
 Doubles = com.google.common.primitives.Doubles
 JMadGui = cern.accsoft.steering.jmad.gui.JMad
@@ -26,16 +33,19 @@ Iterables = com.google.common.collect.Iterables
 
 class JMad(object):
     def __init__(self):
-        self._jmadService = JMadServiceFactory.createJMadService()
+        try:
+            self._springContext = SpringApplicationContext(
+                org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration)
+            self._jmadService = self._springContext['jmadService']
+            self.model_packs = JMadModelPackService(self._springContext)
+        except:
+            logging.exception("JMad Model Pack Service not available, falling back")
+            self._jmadService = JMadServiceFactory.createJMadService()
         self._jmadModelDefinitionManager = self._jmadService.getModelDefinitionManager()
         self._jmadModelManager = self._jmadService.getModelManager()
 
     @property
     def model_definitions(self):
-        class HtmlDict(dict):
-            def _repr_html_(self):
-                return ''.join([s._repr_html_() for s in self.values()])
-
         return HtmlDict({m.getName(): ModelDefinition(m) for m in
                          self._jmadModelDefinitionManager.getAllModelDefinitions()})
 

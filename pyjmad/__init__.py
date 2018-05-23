@@ -14,6 +14,8 @@ __cmmnbuild_deps__ = [
 
 __gradle_deps__ = [
     "jmad:jmad-core:+",
+    {'repository': 'maven { url "https://dl.bintray.com/jmad/jmad-repo" }',
+     'groupId': 'jmad', 'artifactId': 'jmad-modelpack-service'},
     "org.slf4j:slf4j-api:+",
     "org.slf4j:slf4j-log4j12:+",
     "log4j:log4j:1.2.17",
@@ -30,4 +32,4 @@ except:
 
     logging.basicConfig()
     log = logging.getLogger(__name__)
-    log.warning("required dependencies are not installed")
+    log.exception("required dependencies are not installed")

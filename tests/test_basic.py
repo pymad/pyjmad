@@ -3,16 +3,17 @@
 from pyjmad import pyjmad
 import pyjmad
 import numpy as np
+from .models import *
 
 def test_model_definition_loading():
     jmad = pyjmad.JMad()
-    assert len(jmad.model_definitions) > 10
-    assert jmad.model_definitions['LHC 2017'] is not None
+    assert len(jmad.model_packs) > 1
+    assert lhc_model_2017(jmad) is not None
 
 
 def test_model_creation():
     jmad = pyjmad.JMad()
-    lhcModel = jmad.create_model('LHC 2017')
+    lhcModel = lhc_model_2017(jmad)
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
     lhcModel.range = 'ALL'
@@ -24,7 +25,7 @@ def test_model_creation():
  
 def test_twiss():
     jmad = pyjmad.JMad()
-    lhcModel = jmad.create_model('LHC 2017')
+    lhcModel = lhc_model_2017(jmad)
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
     lhcModel.range = 'ALL'

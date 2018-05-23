@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import MutableMapping
-from pyjmad import cern, java
+
+from .pyjmad import cern, java
 
 
 class Element(object):
@@ -68,17 +69,17 @@ Octupole = _specific_element('Octupole', ['k3', 'tilt'])
 
 def from_jmad(jmadElement):
     _jmadElementMap = {
-        cern.accsoft.steering.jmad.domain.elem.impl.BeamBeam: BeamBeam,
-        cern.accsoft.steering.jmad.domain.elem.impl.Bend: Bend,
-        cern.accsoft.steering.jmad.domain.elem.impl.Corrector: Corrector,
-        cern.accsoft.steering.jmad.domain.elem.impl.Marker: Marker,
-        cern.accsoft.steering.jmad.domain.elem.impl.Monitor: Monitor,
-        cern.accsoft.steering.jmad.domain.elem.impl.Octupole: Octupole,
-        cern.accsoft.steering.jmad.domain.elem.impl.Quadrupole: Quadrupole,
-        cern.accsoft.steering.jmad.domain.elem.impl.Sextupole: Sextupole,
-        cern.accsoft.steering.jmad.domain.elem.impl.UnknownElement: Element
+        'BeamBeam': BeamBeam,
+        'Bend': Bend,
+        'Corrector': Corrector,
+        'Marker': Marker,
+        'Monitor': Monitor,
+        'Octupole': Octupole,
+        'Quadrupole': Quadrupole,
+        'Sextupole': Sextupole,
+        'UnknownElement': Element
     }
-    return _jmadElementMap[jmadElement.getClass()](jmadElement)
+    return _jmadElementMap[jmadElement.getClass().getSimpleName()](jmadElement)
 
 
 class Attributes(MutableMapping):

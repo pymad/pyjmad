@@ -2,10 +2,11 @@
 
 import pyjmad
 import numpy as np
+from .models import *
 
 def test_slice_elements():
     jmad = pyjmad.JMad()
-    lhcModel = jmad.create_model('LHC 2017')
+    lhcModel = lhc_model_2017(jmad)
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
     lhcModel.range = 'ALL'
@@ -14,7 +15,7 @@ def test_slice_elements():
 
 def test_set_quatrupole():
     jmad = pyjmad.JMad()
-    lhcModel = jmad.create_model('LHC 2017')
+    lhcModel = lhc_model_2017(jmad)
     lhcModel.sequence = 'lhcb1'
     lhcModel.optic = 'R2017a_A40C40A10mL300_CTPPS2'
     lhcModel.range = 'ALL'
