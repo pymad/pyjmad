@@ -13,9 +13,9 @@ __cmmnbuild_deps__ = [
 ]
 
 __gradle_deps__ = [
-    "jmad:jmad-core:+",
+    "jmad:jmad-core:0.1.3+",
     {'repository': 'maven { url "https://dl.bintray.com/jmad/jmad-repo" }',
-     'groupId': 'jmad', 'artifactId': 'jmad-modelpack-service'},
+     'groupId': 'jmad', 'artifactId': 'jmad-modelpack-service', 'version': '0.2.1+'},
     "org.slf4j:slf4j-api:+",
     "org.slf4j:slf4j-log4j12:+",
     "log4j:log4j:1.2.17",
