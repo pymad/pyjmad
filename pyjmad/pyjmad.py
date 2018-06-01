@@ -34,8 +34,14 @@ Iterables = com.google.common.collect.Iterables
 class JMad(object):
     def __init__(self):
         try:
-            self._springContext = SpringApplicationContext(
-                cern.accsoft.steering.jmad.gui.config.JMadGuiStandaloneConfiguration)
+            try:
+                self._springContext = SpringApplicationContext(
+                    cern.accsoft.steering.jmad.gui.config.JMadGuiStandaloneConfiguration)
+            except:
+                logging.info("Could not instantiate GUI context, trying headless context")
+                self._springContext = SpringApplicationContext(
+                    org.jmad.modelpack.service.conf.JMadModelPackageServiceStandaloneConfiguration)
+
             self._jmadService = self._springContext['jmadService']
             self.model_packs = JMadModelPackService(self._springContext)
         except:
