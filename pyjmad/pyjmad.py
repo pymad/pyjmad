@@ -35,7 +35,7 @@ class JMad(object):
     def __init__(self):
         try:
             self._springContext = SpringApplicationContext(
-                org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration)
+                cern.accsoft.steering.jmad.gui.config.JMadGuiStandaloneConfiguration)
             self._jmadService = self._springContext['jmadService']
             self.model_packs = JMadModelPackService(self._springContext)
         except:
@@ -57,11 +57,11 @@ class JMad(object):
         return Model(self._jmadService.createModel(model._jmadModelDefinition))
 
     def open_jmad_gui(self):
-        prefs = JMadGuiPreferencesImpl()
-        prefs.setExitOnClose(False)
-        prefs.setCleanupOnClose(False)
-        prefs.setMainFrame(False)
-        jpype.setupGuiEnvironment(lambda: JMadGui(self._jmadService, prefs, None).show())
+        gui = self._springContext['jmadGui']
+        gui.getJmadGuiPreferences().setCleanupOnClose(False)
+        gui.getJmadGuiPreferences().setExitOnClose(False)
+        gui.getJmadGuiPreferences().setMainFrame(False)
+        jpype.setupGuiEnvironment(lambda: gui.show())
 
 
 class Model(object):

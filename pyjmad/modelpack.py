@@ -6,19 +6,17 @@ from .util import *
 
 
 def _repo_to_uri(javaRepo):
-    GitlabModelPackageRepository = org.jmad.modelpack.service.gitlab.GitlabModelPackageRepository
-    InternalRepository = org.jmad.modelpack.service.internal.domain.InternalRepository
-    if type(javaRepo) is InternalRepository:
+    if str(javaRepo.connectorId()) == 'internal-classpath':
         return 'jmad:internal'
-    elif type(javaRepo) is GitlabModelPackageRepository:
-        return javaRepo.baseUrl() + '/' + javaRepo.groupName()
+    elif str(javaRepo.connectorId()) == 'gitlab-group-api-v4':
+        return javaRepo.baseUrl() + '/' + javaRepo.repoName()
     else:
         raise ValueError('unknown repository type: ' + str(javaRepo))
 
 
 def _repo_from_uri(uri):
-    GitlabModelPackageRepository = org.jmad.modelpack.service.gitlab.GitlabModelPackageRepository
-    InternalRepository = org.jmad.modelpack.service.internal.domain.InternalRepository
+    JMadModelPackageRepository = org.jmad.modelpack.domain.JMadModelPackageRepository
+    InternalRepository = org.jmad.modelpack.connect.embedded.domain.InternalRepository
     schema = uri.split(':')[0]
     if schema == 'jmad':
         if uri == 'jmad:internal':
@@ -27,17 +25,24 @@ def _repo_from_uri(uri):
             raise ValueError('invalid "jmad:" uri "{0}" - expected = jmad:internal'.format(uri))
     elif schema == 'http' or schema == 'https':
         base_url, group_name = uri.rsplit('/', 1)
-        return GitlabModelPackageRepository(base_url, group_name)
+        return JMadModelPackageRepository(base_url, group_name, 'gitlab-group-api-v4')
+    elif '+' in schema:
+        connector, repo_uri = uri.split('+', 1)
+        base_url, group_name = repo_uri.rsplit('/', 1)
+        return JMadModelPackageRepository(base_url, group_name, connector)
     else:
         raise ValueError('invalid repository URI: ' + uri)
 
 
 jmad_default_repositories = {}
-for method in org.jmad.modelpack.JMadModelRepositories.__javaclass__.getDeclaredMethods():
-    if method.getModifiers() & java.lang.reflect.Modifier.PUBLIC:
-        repo = method.getName()
-        jmad_default_repositories[repo] = _repo_to_uri(getattr(org.jmad.modelpack.JMadModelRepositories, repo)())
-
+try:
+    _JMadModelRepositories = org.jmad.modelpack.domain.JMadModelRepositories
+    for method in _JMadModelRepositories.__javaclass__.getDeclaredMethods():
+        if method.getModifiers() & java.lang.reflect.Modifier.PUBLIC:
+            repo = method.getName()
+            jmad_default_repositories[repo] = _repo_to_uri(getattr(_JMadModelRepositories, repo)())
+except Exception:
+    logging.exception("can not fetch default models from jmad-modelpack-service")
 
 class JMadModelPackService(object):
     def __init__(self, applicationContext):
@@ -101,18 +106,14 @@ class ModelPackType(object):
     def __init__(self, service, name, variants):
         self._name = name
         self._all_variants = {}
-        Branch = org.jmad.modelpack.service.gitlab.domain.Branch
-        Release = org.jmad.modelpack.service.gitlab.domain.Release
-        Tag = org.jmad.modelpack.service.gitlab.domain.Tag
-        InternalPackageVariant = org.jmad.modelpack.service.internal.domain.InternalPackageVariant
         for modpack in variants:
-            if type(modpack.variant()) is Release:
+            if str(modpack.variant().type()) == 'RELEASE':
                 variant = 'releases'
-            elif type(modpack.variant()) is Branch:
+            elif str(modpack.variant().type()) == 'BRANCH':
                 variant = 'branches'
-            elif type(modpack.variant()) is Tag:
+            elif str(modpack.variant().type()) == 'TAG':
                 variant = 'tags'
-            elif type(modpack.variant()) is InternalPackageVariant:
+            elif type(modpack.variant()) is org.jmad.modelpack.connect.embedded.domain.InternalPackageVariant:
                 variant = 'internal_models'
             else:
                 variant = 'others'

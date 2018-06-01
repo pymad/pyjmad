@@ -13,12 +13,19 @@ __cmmnbuild_deps__ = [
 ]
 
 __gradle_deps__ = [
-    "jmad:jmad-core:0.1.3+",
+    "jmad:jmad-core:0.1.4+",
+    'jmad:jmad-modelpack-service:0.2.3+',
+    'jmad:jmad-modelpack-fx:0.1.1+',
     {'repository': 'maven { url "https://dl.bintray.com/jmad/jmad-repo" }',
-     'groupId': 'jmad', 'artifactId': 'jmad-modelpack-service', 'version': '0.2.1+'},
+     'groupId': 'jmad', 'artifactId': 'jmad-gui', 'version': '0.1.1+'},
     "org.slf4j:slf4j-api:+",
     "org.slf4j:slf4j-log4j12:+",
     "log4j:log4j:1.2.17",
+    # for jdataviewer
+    {'repository': 'ivy { url "http://jmad.web.cern.ch/jmad/static/ws/lib/"\n' +
+                   'layout "pattern", { artifact "[artifact].[ext]" } \n' +
+                   'metadataSources { artifact() } }',
+     'groupId': 'cern', 'artifactId': 'jdataviewer', 'version': '1.4.7'},
 ]
 
 # When running setuptools without required dependencies installed
