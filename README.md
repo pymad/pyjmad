@@ -1,7 +1,9 @@
 [![Build Status](https://travis-ci.org/pymad/pyjmad.svg?branch=master)](https://travis-ci.org/pymad/pyjmad)
 
 # PyJMad
-Yet another python wrapper around JMad using JPype. PyJMad aims for compatibility with other CERN Java-Python bridges, using cmmnbuild-dep-manager (and access to CERN resources) for easy side-by-side installation. A particular focus lies on interactive usage and integration with IPython/Jupyter.
+Yet another python wrapper around JMad using JPype. PyJMad aims for compatibility with other CERN Java-Python bridges,
+using cmmnbuild-dep-manager (and access to CERN resources) for easy side-by-side installation. A particular focus lies
+on interactive usage and integration with IPython/Jupyter.
 
 ### Set up:
 ```python
@@ -9,19 +11,41 @@ import pyjmad
 jmad = pyjmad.JMad()
 ```
 
-### Explore model definitions:
+### Explore model packs
+JMad model packs are now stored as Git repos, and accessed through [jmad-modelpack-service] - the "previous" style
+of loading models from the Java class path is still supported through the special "INTERNAL" model pack. At the moment,
+repositories must be hosted on a GitLab service, as they are accessed through the GitLab REST API.
 ```python
-jmad.model_definitions
+jmad.model_packs
+```
+Example output:
+```text
+ModelPackService [ 
+ -> Enabled Repos: 
+    - https://gitlab.cern.ch/jmad-modelpacks-cern
+    - jmad:internal
+ -> Available ModelPacks: 
+    - INTERNAL
+    - jmad-modelpack-lhc
+    - jmad-modelpack-sps
+    - jmad-modelpack-leir
+    - jmad-modelpack-ps
+]
+```
+The models are accessed through indexing model_packs. Jupyter/IPython autocompletion is supported at all stages.
+```python
+model_def = jmad.model_packs['jmad-modelpack-lhc'].branches['master'].models['LHC 2017']
+```
+#### Add a custom model pack repository:
+```python
+jmad.model_packs.add_repository('https://gitlab.cern.ch/jmad-repo-michi-testing')
 ```
 
+[jmad-modelpack-service]: https://github.com/jmad/jmad-modelpack-service
 ### Setup a Model:
 ```python
-md = jmad.model_definitions['LHC 2017']
+md = jmad.model_packs['jmad-modelpack-lhc'].branches['master'].models['LHC 2017']
 jmad.create_model(md)
-```
-or simply:
-```python
-lhcModel = jmad.create_model('LHC 2017')
 ```
 
 Set a Sequence and Optic to use:
