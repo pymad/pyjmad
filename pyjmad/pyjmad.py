@@ -142,6 +142,9 @@ class Model(object):
     def beam(self):
         return Beam(self._jmadModel.getActiveRange().getRangeDefinition().getSequenceDefinition().getBeam())
 
+    def reset(self):
+        self._jmadModel.reset()
+
     def match(self, *args):
         MatchResultRequestImpl = cern.accsoft.steering.jmad.domain.result.match.MatchResultRequestImpl
         MadxVaryParameterImpl = cern.accsoft.steering.jmad.domain.result.match.input.MadxVaryParameterImpl

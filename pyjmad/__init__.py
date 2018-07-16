@@ -1,12 +1,8 @@
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 __cmmnbuild_deps__ = [
-    "accmodel-jmad-core",
-    "accmodel-jmad-models-lhc",
-    "accmodel-jmad-models-gsi",
-    "accmodel-jmad-models-lhctransfer",
-    "accsoft-steering-commons",
-    "accmodel-jmad-gui",
+    "jmad-core-pro",
+    "jmad-gui-pro",
     "slf4j-log4j12",
     "slf4j-api",
     "log4j"
@@ -16,8 +12,7 @@ __gradle_deps__ = [
     "jmad:jmad-core:0.1.4+",
     'jmad:jmad-modelpack-service:0.2.3+',
     'jmad:jmad-modelpack-fx:0.1.1+',
-    {'repository': 'maven { url "https://dl.bintray.com/jmad/jmad-repo" }',
-     'groupId': 'jmad', 'artifactId': 'jmad-gui', 'version': '0.1.1+'},
+    "jmad:jmad-gui:0.1.1+",
     "org.slf4j:slf4j-api:+",
     "org.slf4j:slf4j-log4j12:+",
     "log4j:log4j:1.2.17",
