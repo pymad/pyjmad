@@ -19,3 +19,13 @@ install:
 
 script:
   - pytest tests
+
+deploy:
+  provider: pypi
+  user: pyjmad-release
+  password:
+    secure: t8HsjSKW1HQgFbD/WmeqQwiDZ1vc+Ofi8O3+aDuCxlAs4z0svrychuFLC87YDmDbvCh1VtVfxnn1gMh93XuIl4Q+XtZA3unAwNAdu9SomlTxv+aBXM6vY7YqZ8Dx5gcEbDmGd8w7eO3LqDrG4OSvMYNgFYRh63101buAQiDaR2JTX4fZmK2bC/6z/HlGYZfPn/JCaFaTFO9rix5T2s9td9zCN0+Sf6o1M2k6m/D2fD1DUiHMf/If+/qW28EYdf834mWiloIE4qGr/OkEJKTb2pY5jRaSTkeRtY8CjI0xWqneXFSUL3nNMTxY+Jpo07UePd4hoiCL6z9WNN/XpUb1AVu8zSPZb3pVYcEP8dUu4lDGQZHI6UYkarX8chC5OY9wG1Xyf5keTbzE09x4ZKrRrsjiZqqZN0bGM9voKGD6azsNQ3JupEl3aKpcm8j7hmR9AjQSgASj/pk/xKE5hia0hh4U7T2bWqp1objAov5m+YSpIclNcaVj+I2mv0mmbCPAs2zFc7jV8LYednwauSsE4Jm2GzNO0q1LOhvTwcMWdDgtb0p/H2UDn7rdViFdpZOu4hmvVQsHxXeBJ4kVPLl8eCFOuX77fPo16esc+dmoQaN2DBfEjPRawZyoMB3UBDbDaKtS2ORjAiN9Si8mMpbN/2FJPCEtOftYATB5KYkLvpI=
+  distributions: sdist
+  on:
+    tags: true
+    python: 3.5
