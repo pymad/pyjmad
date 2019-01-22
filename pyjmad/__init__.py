@@ -1,8 +1,9 @@
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 __cmmnbuild_deps__ = [
     "jmad-core-pro",
     "jmad-gui-pro",
+    "jmad-modelpack-service-pro",
     "slf4j-log4j12",
     "slf4j-api",
     "log4j"
