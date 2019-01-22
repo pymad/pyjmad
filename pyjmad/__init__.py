@@ -4,6 +4,8 @@ __cmmnbuild_deps__ = [
     "jmad-core-pro",
     "jmad-gui-pro",
     "jmad-modelpack-service-pro",
+    "accmodel-jmad-models-lhc",
+    "accmodel-jmad-models-lhctransfer",
     "slf4j-log4j12",
     "slf4j-api",
     "log4j"
