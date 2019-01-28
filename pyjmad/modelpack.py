@@ -42,7 +42,7 @@ try:
             repo = method.getName()
             jmad_default_repositories[repo] = _repo_to_uri(getattr(_JMadModelRepositories, repo)())
 except Exception:
-    logging.exception("can not fetch default models from jmad-modelpack-service")
+    logging.exception('can not fetch default models from jmad-modelpack-service')
 
 class JMadModelPackService(object):
     def __init__(self, applicationContext):
@@ -61,6 +61,11 @@ class JMadModelPackService(object):
         modelpacks.sort(key=modelpack_name)
         for name, variants in itertools.groupby(modelpacks, modelpack_name):
             self._modelpacks[name] = ModelPackType(self, name, variants)
+
+    def refresh(self):
+        logging.info('Clearing caches and reloading model packs ...')
+        self._javaService.clearCache().block()
+        self._reload()
 
     @property
     def repositories(self):
