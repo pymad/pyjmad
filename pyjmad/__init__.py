@@ -1,9 +1,10 @@
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 
 __cmmnbuild_deps__ = [
     "jmad-core-pro",
     "jmad-gui-pro",
     "jmad-modelpack-service-pro",
+    "jmad-modelpack-fx-pro",
     "accmodel-jmad-models-lhc",
     "accmodel-jmad-models-lhctransfer",
     "slf4j-log4j12",
@@ -13,9 +14,9 @@ __cmmnbuild_deps__ = [
 
 __gradle_deps__ = [
     "jmad:jmad-core:0.2.2+",
-    'jmad:jmad-modelpack-service:0.2.6+',
-    'jmad:jmad-modelpack-fx:0.2.4+',
-    "jmad:jmad-gui:0.3.22+",
+    'jmad:jmad-modelpack-service:0.2.7+',
+    'jmad:jmad-modelpack-fx:0.2.5+',
+    "jmad:jmad-gui:0.3.24+",
     "org.slf4j:slf4j-api:+",
     "org.slf4j:slf4j-log4j12:+",
     "log4j:log4j:1.2.17",

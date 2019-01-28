@@ -16,8 +16,6 @@ org = jpype.JPackage('org')
 java = jpype.JPackage('java')
 com = jpype.JPackage('com')
 
-org.apache.log4j.BasicConfigurator.configure()
-org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.INFO)
 from .spring import SpringApplicationContext
 
 from .modelpack import JMadModelPackService
@@ -32,7 +30,14 @@ Iterables = com.google.common.collect.Iterables
 
 
 class JMad(object):
-    def __init__(self):
+    def __init__(self, logLevel=None):
+        log4j = org.apache.log4j
+        if log4j.BasicConfigurator is not None and callable(log4j.BasicConfigurator.configure):
+            log4j.BasicConfigurator.configure()
+            if logLevel is not None:
+                log4j.Logger.getRootLogger().setLevel(log4j.Level.toLevel(logLevel))
+            else:
+                log4j.Logger.getRootLogger().setLevel(log4j.Level.WARN)
         try:
             try:
                 self._springContext = SpringApplicationContext(
@@ -104,7 +109,7 @@ class Model(object):
     def optic(self, optic):
         jmadOptic = self.definition._jmad_opticDefinition(optic)
         if jmadOptic is None:
-            raise ValueError('Invalid Optic: ' + jmadOptic)
+            raise ValueError('Invalid Optic: ' + optic)
         self._jmadModel.setActiveOpticsDefinition(jmadOptic)
 
     @property
@@ -128,7 +133,7 @@ class Model(object):
 
     @range.setter
     def range(self, range):
-        return self._jmadModel.setActiveRangeDefinition(self.sequence._jmad_rangeDefinition(range))
+        self._jmadModel.setActiveRangeDefinition(self.sequence._jmad_rangeDefinition(range))
 
     @property
     def strengths(self):
