@@ -152,4 +152,4 @@ class ModelPack(object):
     def models(self):
         from .pyjmad import ModelDefinition
         modeldefs = self._service._javaService.modelDefinitionsFrom(self._javaModelPackVariant).collectList().block()
-        return HtmlDict({mdef.getName(): ModelDefinition(mdef) for mdef in modeldefs})
+        return HtmlDict({str(mdef.getName()): ModelDefinition(mdef) for mdef in modeldefs})
