@@ -22,7 +22,7 @@ class Element(object):
 
     @length.setter
     def length(self, len):
-        self._jmadElement.getLength(float(len))
+        self._jmadElement.setLength(float(len))
 
     @property
     def position(self):
