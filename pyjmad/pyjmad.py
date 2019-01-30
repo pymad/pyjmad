@@ -137,7 +137,7 @@ class Model(object):
 
     @property
     def strengths(self):
-        return Strengths(self._jmadModel.getStrengthsAndVars())
+        return Strengths(self._jmadModel)
 
     @property
     def elements(self):
@@ -397,20 +397,24 @@ class MatchResult(object):
 
 
 class Strengths(MutableMapping):
-    def __init__(self, jmadStrengthVarSet):
-        self._jmadStrengthVarSet = jmadStrengthVarSet
+    def __init__(self, jmadModel):
+        self._jmadStrengthVarSet = jmadModel.getStrengthsAndVars()
+        self._jmadModel = jmadModel
 
-    def _jmadStrength(self, k):
+    def __getitem__(self, k):
         jmadStrength = self._jmadStrengthVarSet.getStrength(k)
         if jmadStrength is None:
             raise KeyError('Invalid Strength Name: ' + k)
-        return jmadStrength
-
-    def __getitem__(self, k):
-        return self._jmadStrength(k).getValue()
+        return jmadStrength.getValue()
 
     def __setitem__(self, k, v):
-        return self._jmadStrength(k).setValue(float(v))
+        jmadStrength = self._jmadStrengthVarSet.getStrength(k)
+        if jmadStrength is None:
+            logging.info("Creating new MAD-X strength " + k)
+            SimpleStrength = cern.accsoft.steering.jmad.domain.knob.strength.SimpleStrength
+            jmadStrength = SimpleStrength(k, 0.0, None)
+            jmadStrength.addListener(self._jmadModel.strengthListener)
+        return jmadStrength.setValue(float(v))
 
     def __delitem__(self, k):
         raise NotImplementedError('Deletion of Strengths is not supported')

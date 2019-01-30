@@ -34,16 +34,6 @@ def _repo_from_uri(uri):
         raise ValueError('invalid repository URI: ' + uri)
 
 
-jmad_default_repositories = {}
-try:
-    _JMadModelRepositories = org.jmad.modelpack.domain.JMadModelRepositories
-    for method in _JMadModelRepositories.__javaclass__.getDeclaredMethods():
-        if method.getModifiers() & java.lang.reflect.Modifier.PUBLIC:
-            repo = method.getName()
-            jmad_default_repositories[repo] = _repo_to_uri(getattr(_JMadModelRepositories, repo)())
-except Exception:
-    logging.exception('can not fetch default models from jmad-modelpack-service')
-
 class JMadModelPackService(object):
     def __init__(self, applicationContext):
         self._javaService = applicationContext['jmadModelPackageService']

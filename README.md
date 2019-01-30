@@ -74,11 +74,18 @@ plt.show()
 ```python
 lhcModel.strengths
 ```
+Set strengths:
 ```python
 lhcModel.strengths['on_x1'] = 140
 lhcModel.strengths['on_x5'] = 140
 print(lhcModel.strengths['on_x5'])
 ```
+Note that a new strength is automatically created if you assign it a value;
+a warning is issued in this case:
+```python
+lhcModel.strengths['on_xx5_v'] = 140
+```
+```INFO:root:Creating new MAD-X strength on_xx5_v```
 (jupyter/ipython autocompletion hints supported)
 
 ### Deal with Elements:

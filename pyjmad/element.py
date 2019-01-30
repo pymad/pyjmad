@@ -65,6 +65,7 @@ Monitor = _specific_element('Monitor', [])
 Quadrupole = _specific_element('Quadrupole', ['k1', 'tilt'])
 Sextupole = _specific_element('Sextupole', ['k2', 'tilt'])
 Octupole = _specific_element('Octupole', ['k3', 'tilt'])
+Solenoid = _specific_element('Solenoid', ['ks', 'ksi'])
 
 
 def from_jmad(jmadElement):
@@ -77,6 +78,7 @@ def from_jmad(jmadElement):
         'Octupole': Octupole,
         'Quadrupole': Quadrupole,
         'Sextupole': Sextupole,
+        'Solenoid': Solenoid,
         'UnknownElement': Element
     }
     return _jmadElementMap[jmadElement.getClass().getSimpleName()](jmadElement)

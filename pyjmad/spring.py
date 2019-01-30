@@ -7,9 +7,9 @@ ClassPathXmlApplicationContext = org.springframework.context.support.ClassPathXm
 class SpringApplicationContext(object):
     def __init__(self, configuration):
         if type(configuration) is str:
-            self._context = ClassPathXmlApplicationContext(configuration)
+            self._context = ClassPathXmlApplicationContext([configuration])
         else:
-            self._context = AnnotationConfigApplicationContext(configuration)
+            self._context = AnnotationConfigApplicationContext([configuration])
 
     def bean_definitions(self):
         return [str(s) for s in self._context.getBeanDefinitionNames()]
